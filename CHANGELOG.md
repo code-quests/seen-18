@@ -1,5 +1,11 @@
 # Roo Code Changelog
 
+## 3.3.18
+
+### Patch Changes
+
+- Make sure that we fire the onBlur for edited fields when the user hits Done in settings
+
 ## [3.3.17]
 
 - Fix the restore checkpoint popover
