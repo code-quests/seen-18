@@ -42,7 +42,7 @@ const getCommandsMap = ({ context, outputChannel, provider }: RegisterCommandOpt
 }
 
 const openClineInNewTab = async ({ context, outputChannel }: Omit<RegisterCommandOptions, "provider">) => {
-	outputChannel.appendLine("Opening Roo Code in new tab")
+	outputChannel.appendLine("Opening Seen-18 Code in new tab")
 
 	// (This example uses webviewProvider activation event which is necessary to
 	// deserialize cached webview, but since we use retainContextWhenHidden, we

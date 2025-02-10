@@ -139,7 +139,9 @@ export const ChatRowContent = ({
 							className="codicon codicon-terminal"
 							style={{ color: normalColor, marginBottom: "-1.5px" }}></span>
 					),
-					<span style={{ color: normalColor, fontWeight: "bold" }}>Roo wants to execute this command:</span>,
+					<span style={{ color: normalColor, fontWeight: "bold" }}>
+						Seen-18 wants to execute this command:
+					</span>,
 				]
 			case "use_mcp_server":
 				const mcpServerUse = JSON.parse(message.text || "{}") as ClineAskUseMcpServer
@@ -152,8 +154,8 @@ export const ChatRowContent = ({
 							style={{ color: normalColor, marginBottom: "-1.5px" }}></span>
 					),
 					<span style={{ color: normalColor, fontWeight: "bold" }}>
-						Roo wants to {mcpServerUse.type === "use_mcp_tool" ? "use a tool" : "access a resource"} on the{" "}
-						<code>{mcpServerUse.serverName}</code> MCP server:
+						Seen-18 wants to {mcpServerUse.type === "use_mcp_tool" ? "use a tool" : "access a resource"} on
+						the <code>{mcpServerUse.serverName}</code> MCP server:
 					</span>,
 				]
 			case "completion_result":
@@ -259,7 +261,7 @@ export const ChatRowContent = ({
 					<>
 						<div style={headerStyle}>
 							{toolIcon(tool.tool === "appliedDiff" ? "diff" : "edit")}
-							<span style={{ fontWeight: "bold" }}>Roo wants to edit this file:</span>
+							<span style={{ fontWeight: "bold" }}>Seen-18 wants to edit this file:</span>
 						</div>
 						<CodeAccordian
 							isLoading={message.partial}
@@ -275,7 +277,7 @@ export const ChatRowContent = ({
 					<>
 						<div style={headerStyle}>
 							{toolIcon("new-file")}
-							<span style={{ fontWeight: "bold" }}>Roo wants to create a new file:</span>
+							<span style={{ fontWeight: "bold" }}>Seen-18 wants to create a new file:</span>
 						</div>
 						<CodeAccordian
 							isLoading={message.partial}
@@ -292,7 +294,7 @@ export const ChatRowContent = ({
 						<div style={headerStyle}>
 							{toolIcon("file-code")}
 							<span style={{ fontWeight: "bold" }}>
-								{message.type === "ask" ? "Roo wants to read this file:" : "Roo read this file:"}
+								{message.type === "ask" ? "Seen-18 wants to read this file:" : "Roo read this file:"}
 							</span>
 						</div>
 						{/* <CodeAccordian
@@ -350,7 +352,7 @@ export const ChatRowContent = ({
 							{toolIcon("folder-opened")}
 							<span style={{ fontWeight: "bold" }}>
 								{message.type === "ask"
-									? "Roo wants to view the top level files in this directory:"
+									? "Seen-18 wants to view the top level files in this directory:"
 									: "Roo viewed the top level files in this directory:"}
 							</span>
 						</div>
@@ -370,7 +372,7 @@ export const ChatRowContent = ({
 							{toolIcon("folder-opened")}
 							<span style={{ fontWeight: "bold" }}>
 								{message.type === "ask"
-									? "Roo wants to recursively view all files in this directory:"
+									? "Seen-18 wants to recursively view all files in this directory:"
 									: "Roo recursively viewed all files in this directory:"}
 							</span>
 						</div>
@@ -390,7 +392,7 @@ export const ChatRowContent = ({
 							{toolIcon("file-code")}
 							<span style={{ fontWeight: "bold" }}>
 								{message.type === "ask"
-									? "Roo wants to view source code definition names used in this directory:"
+									? "Seen-18 wants to view source code definition names used in this directory:"
 									: "Roo viewed source code definition names used in this directory:"}
 							</span>
 						</div>
@@ -410,7 +412,7 @@ export const ChatRowContent = ({
 							<span style={{ fontWeight: "bold" }}>
 								{message.type === "ask" ? (
 									<>
-										Roo wants to search this directory for <code>{tool.regex}</code>:
+										Seen-18 wants to search this directory for <code>{tool.regex}</code>:
 									</>
 								) : (
 									<>
@@ -437,7 +439,7 @@ export const ChatRowContent = ({
 			// 				{isInspecting ? <ProgressIndicator /> : toolIcon("inspect")}
 			// 				<span style={{ fontWeight: "bold" }}>
 			// 					{message.type === "ask" ? (
-			// 						<>Roo wants to inspect this website:</>
+			// 						<>Seen-18 wants to inspect this website:</>
 			// 					) : (
 			// 						<>Roo is inspecting this website:</>
 			// 					)}
@@ -462,7 +464,7 @@ export const ChatRowContent = ({
 							<span style={{ fontWeight: "bold" }}>
 								{message.type === "ask" ? (
 									<>
-										Roo wants to switch to <code>{tool.mode}</code> mode
+										Seen-18 wants to switch to <code>{tool.mode}</code> mode
 										{tool.reason ? ` because: ${tool.reason}` : ""}
 									</>
 								) : (
@@ -481,7 +483,7 @@ export const ChatRowContent = ({
 						<div style={headerStyle}>
 							{toolIcon("new-file")}
 							<span style={{ fontWeight: "bold" }}>
-								Roo wants to create a new task in <code>{tool.mode}</code> mode:
+								Seen-18 wants to create a new task in <code>{tool.mode}</code> mode:
 							</span>
 						</div>
 						<div style={{ paddingLeft: "26px", marginTop: "4px" }}>

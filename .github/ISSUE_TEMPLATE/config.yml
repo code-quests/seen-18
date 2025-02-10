@@ -4,5 +4,5 @@ contact_links:
       url: https://github.com/code-quests/seen-18/discussions/categories/feature-requests
       about: Share and vote on feature requests for Roo Code
     - name: Leave a Review
-      url: https://marketplace.visualstudio.com/items?itemName=RooVeterinaryInc.roo-cline&ssr=false#review-details
-      about: Enjoying Roo Code? Leave a review here!
+      url: https://marketplace.visualstudio.com/items?itemName=code-quests.seen18&ssr=false#review-details
+      about: Finding Seen-18 useful? has it saved you multiple times? Leave a review here!

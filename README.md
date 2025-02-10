@@ -147,7 +147,7 @@ Seen-18 is available on:
     - A `.vsix` file will appear in the `bin/` directory.
 4. **Install** the `.vsix` manually if desired:
     ```bash
-    code --install-extension bin/seen-18-1.0.0.vsix
+    code --install-extension bin/seen18-1.0.0.vsix
     ```
 5. **Start the webview (Vite/React app with HMR)**:
     ```bash

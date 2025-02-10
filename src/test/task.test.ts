@@ -4,7 +4,7 @@ import * as vscode from "vscode"
 import { ClineAPI } from "../exports/cline"
 import { ClineProvider } from "../core/webview/ClineProvider"
 
-suite("Roo Code Task", () => {
+suite("Seen-18 Task", () => {
 	test("Should handle prompt and response correctly", async function () {
 		const timeout = 30000
 		const interval = 1000
@@ -22,7 +22,7 @@ suite("Roo Code Task", () => {
 		await provider.storeSecret("openRouterApiKey", process.env.OPENROUTER_API_KEY || "sk-or-v1-fake-api-key")
 
 		// Create webview panel with development options.
-		const panel = vscode.window.createWebviewPanel("roo-cline.SidebarProvider", "Roo Code", vscode.ViewColumn.One, {
+		const panel = vscode.window.createWebviewPanel("roo-cline.SidebarProvider", "Seen-18", vscode.ViewColumn.One, {
 			enableScripts: true,
 			enableCommandUris: true,
 			retainContextWhenHidden: true,

@@ -14,7 +14,7 @@ export type CheckpointServiceOptions = {
 
 /**
  * The CheckpointService provides a mechanism for storing a snapshot of the
- * current VSCode workspace each time a Roo Code tool is executed. It uses Git
+ * current VSCode workspace each time a Seen-18 tool is executed. It uses Git
  * under the hood.
  *
  * HOW IT WORKS
@@ -50,8 +50,8 @@ export type CheckpointServiceOptions = {
  */
 
 export class CheckpointService {
-	private static readonly USER_NAME = "Roo Code"
-	private static readonly USER_EMAIL = "support@roocode.com"
+	private static readonly USER_NAME = "Seen-18"
+	private static readonly USER_EMAIL = "support@code-quests.com"
 
 	private _currentCheckpoint?: string
 

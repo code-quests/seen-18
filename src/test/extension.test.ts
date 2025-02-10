@@ -1,7 +1,7 @@
 import * as assert from "assert"
 import * as vscode from "vscode"
 
-suite("Roo Code Extension", () => {
+suite("Seen-18 Extension", () => {
 	test("OPENROUTER_API_KEY environment variable is set", () => {
 		if (!process.env.OPENROUTER_API_KEY) {
 			assert.fail("OPENROUTER_API_KEY environment variable is not set")
@@ -50,12 +50,7 @@ suite("Roo Code Extension", () => {
 	})
 
 	test("Webview panel can be created", () => {
-		const view = vscode.window.createWebviewPanel(
-			"roo-cline.SidebarProvider",
-			"Roo Code",
-			vscode.ViewColumn.One,
-			{},
-		)
+		const view = vscode.window.createWebviewPanel("roo-cline.SidebarProvider", "Seen-18", vscode.ViewColumn.One, {})
 
 		assert.ok(view, "Failed to create webview panel")
 		view.dispose()
