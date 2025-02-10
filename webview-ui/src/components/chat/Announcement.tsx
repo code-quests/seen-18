@@ -52,10 +52,10 @@ const Announcement = ({ version, hideAnnouncement }: AnnouncementProps) => {
 
 			<h3 style={{ margin: "12px 0 8px" }}>Join Us for the Next Chapter</h3>
 			<p style={{ margin: "5px 0px" }}>
-				We can't wait to see how you'll push Roo Code's potential even further! Share your custom modes and join
-				the discussion at{" "}
-				<VSCodeLink href="https://www.reddit.com/r/RooCode" style={{ display: "inline" }}>
-					reddit.com/r/RooCode
+				We can't wait to see how you'll push Seen-18's potential even further! Share your usecases and amazing
+				projects and join the discussion at{" "}
+				<VSCodeLink href="https://qabilah.com/hashtag/س18" style={{ display: "inline" }}>
+					https://qabilah.com/hashtag/س18
 				</VSCodeLink>
 				.
 			</p>

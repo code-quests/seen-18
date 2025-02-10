@@ -231,7 +231,7 @@
 		"configuration": {
 			"title": "Seen-18",
 			"properties": {
-				"roo-cline.allowedCommands": {
+				"seen18.allowedCommands": {
 					"type": "array",
 					"items": {
 						"type": "string"
@@ -246,7 +246,7 @@
 					],
 					"description": "Commands that can be auto-executed when 'Always approve execute operations' is enabled"
 				},
-				"roo-cline.vsCodeLmModelSelector": {
+				"seen18.vsCodeLmModelSelector": {
 					"type": "object",
 					"properties": {
 						"vendor": {
