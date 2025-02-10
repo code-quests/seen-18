@@ -1,10 +1,10 @@
 {
-	"name": "roo-cline",
-	"displayName": "Roo Code (prev. Roo Cline)",
-	"description": "A VS Code plugin that enhances coding with AI-powered automation, multi-model support, and experimental features.",
-	"publisher": "RooVeterinaryInc",
-	"version": "3.3.17",
-	"icon": "assets/icons/rocket.png",
+	"name": "seen18",
+	"displayName": "Seen-18 by CodeQuests",
+	"description": "A VS Code extension that assists you with building complex software projects.",
+	"publisher": "code-quests",
+	"version": "1.0.0",
+	"icon": "assets/icons/icon.jpg",
 	"galleryBanner": {
 		"color": "#617A91",
 		"theme": "dark"
@@ -13,13 +13,13 @@
 		"vscode": "^1.84.0"
 	},
 	"author": {
-		"name": "Roo Vet"
+		"name": "CodeQuests"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/RooVetGit/Roo-Code"
+		"url": "https://github.com/code-quests/seen-18"
 	},
-	"homepage": "https://github.com/RooVetGit/Roo-Code",
+	"homepage": "https://github.com/code-quests/seen-18",
 	"categories": [
 		"AI",
 		"Chat",
@@ -41,8 +41,8 @@
 		"sonnet",
 		"ai",
 		"llama",
-		"roo code",
-		"roocode"
+		"seen-18",
+		"copilot"
 	],
 	"activationEvents": [
 		"onLanguage",
@@ -53,14 +53,14 @@
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "roo-cline-ActivityBar",
-					"title": "Roo Code",
-					"icon": "$(rocket)"
+					"id": "seen18-ActivityBar",
+					"title": "Seen-18",
+					"icon": "$(sparkle)"
 				}
 			]
 		},
 		"views": {
-			"roo-cline-ActivityBar": [
+			"seen18-ActivityBar": [
 				{
 					"type": "webview",
 					"id": "roo-cline.SidebarProvider",
@@ -102,51 +102,51 @@
 			{
 				"command": "roo-cline.openInNewTab",
 				"title": "Open In New Tab",
-				"category": "Roo Code"
+				"category": "Seen-18"
 			},
 			{
 				"command": "roo-cline.explainCode",
-				"title": "Roo Code: Explain Code",
-				"category": "Roo Code"
+				"title": "Seen-18: Explain Code",
+				"category": "Seen-18"
 			},
 			{
 				"command": "roo-cline.fixCode",
-				"title": "Roo Code: Fix Code",
-				"category": "Roo Code"
+				"title": "Seen-18: Fix Code",
+				"category": "Seen-18"
 			},
 			{
 				"command": "roo-cline.improveCode",
-				"title": "Roo Code: Improve Code",
-				"category": "Roo Code"
+				"title": "Seen-18: Improve Code",
+				"category": "Seen-18"
 			},
 			{
 				"command": "roo-cline.addToContext",
-				"title": "Roo Code: Add To Context",
-				"category": "Roo Code"
+				"title": "Seen-18: Add To Context",
+				"category": "Seen-18"
 			},
 			{
 				"command": "roo-cline.terminalAddToContext",
-				"title": "Roo Code: Add Terminal Content to Context",
+				"title": "Seen-18: Add Terminal Content to Context",
 				"category": "Terminal"
 			},
 			{
 				"command": "roo-cline.terminalFixCommand",
-				"title": "Roo Code: Fix This Command",
+				"title": "Seen-18: Fix This Command",
 				"category": "Terminal"
 			},
 			{
 				"command": "roo-cline.terminalExplainCommand",
-				"title": "Roo Code: Explain This Command",
+				"title": "Seen-18: Explain This Command",
 				"category": "Terminal"
 			},
 			{
 				"command": "roo-cline.terminalFixCommandInCurrentTask",
-				"title": "Roo Code: Fix This Command (Current Task)",
+				"title": "Seen-18: Fix This Command (Current Task)",
 				"category": "Terminal"
 			},
 			{
 				"command": "roo-cline.terminalExplainCommandInCurrentTask",
-				"title": "Roo Code: Explain This Command (Current Task)",
+				"title": "Seen-18: Explain This Command (Current Task)",
 				"category": "Terminal"
 			}
 		],
@@ -229,7 +229,7 @@
 			]
 		},
 		"configuration": {
-			"title": "Roo Code",
+			"title": "Seen-18",
 			"properties": {
 				"roo-cline.allowedCommands": {
 					"type": "array",

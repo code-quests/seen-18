@@ -337,7 +337,7 @@ export class CheckpointService {
 		const currentBranch = await git.revparse(["--abbrev-ref", "HEAD"])
 		const currentSha = await git.revparse(["HEAD"])
 
-		const hiddenBranch = `roo-code-checkpoints-${taskId}`
+		const hiddenBranch = `seen-18-checkpoints-${taskId}`
 		const branchSummary = await git.branch()
 
 		if (!branchSummary.all.includes(hiddenBranch)) {
