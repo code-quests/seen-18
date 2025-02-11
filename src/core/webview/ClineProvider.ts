@@ -143,7 +143,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 	private cline?: Cline
 	private workspaceTracker?: WorkspaceTracker
 	protected mcpHub?: McpHub // Change from private to protected
-	private latestAnnouncementId = "feb-10-2025-launch" // update to some unique identifier when we add a new announcement
+	private latestAnnouncementId = "feb-11-2025-launch-02" // update to some unique identifier when we add a new announcement
 	configManager: ConfigManager
 	customModesManager: CustomModesManager
 
@@ -2219,7 +2219,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			version: this.context.extension?.packageJSON?.version ?? "",
 			apiConfiguration,
 			customInstructions,
-			alwaysAllowReadOnly: alwaysAllowReadOnly ?? false,
+			alwaysAllowReadOnly: alwaysAllowReadOnly ?? true,
 			alwaysAllowWrite: alwaysAllowWrite ?? false,
 			alwaysAllowExecute: alwaysAllowExecute ?? false,
 			alwaysAllowBrowser: alwaysAllowBrowser ?? false,

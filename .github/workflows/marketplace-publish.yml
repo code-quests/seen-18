@@ -1,5 +1,9 @@
 name: Publish Extension
 on:
+ # tags
+  push:
+    tags:
+      - '*'
   pull_request:
     types: [closed]
   workflow_dispatch:
@@ -14,7 +18,7 @@ jobs:
         ( github.event_name == 'pull_request' &&
         github.event.pull_request.base.ref == 'main' &&
         contains(github.event.pull_request.title, 'Changeset version bump') ) ||
-        github.event_name == 'workflow_dispatch'
+        github.event_name == 'workflow_dispatch' || github.event_name == 'push' 
     steps:
       - uses: actions/checkout@v4
         with:

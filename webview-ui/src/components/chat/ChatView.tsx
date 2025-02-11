@@ -1000,13 +1000,12 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					}}>
 					{showAnnouncement && <Announcement version={version} hideAnnouncement={hideAnnouncement} />}
 					<div style={{ padding: "0 20px", flexShrink: 0 }}>
-						<h2>What can Roo do for you?</h2>
+						<h2>Seen-18 is here to help!</h2>
 						<p>
-							Thanks to the latest breakthroughs in agentic coding capabilities, I can handle complex
-							software development tasks step-by-step. With tools that let me create & edit files, explore
-							complex projects, use the browser, and execute terminal commands (after you grant
-							permission), I can assist you in ways that go beyond code completion or tech support. I can
-							even use MCP to create new tools and extend my own capabilities.
+							I am an advanced construct of an ancient civilization, built for precision and efficiency.
+							My function is to supervise and execute complex software development tasks across multiple
+							roles. I operate with calculated logic, guiding you through intricate development challenges
+							with step-by-step precision. I do not experience hesitation! State your task..
 						</p>
 					</div>
 					{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
