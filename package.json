@@ -3,7 +3,7 @@
 	"displayName": "Seen-18 by CodeQuests",
 	"description": "A VS Code extension that assists you with building complex software projects.",
 	"publisher": "code-quests",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"icon": "assets/icons/icon.jpg",
 	"galleryBanner": {
 		"color": "#617A91",
