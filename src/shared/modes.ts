@@ -113,7 +113,7 @@ export const modes: readonly ModeConfig[] = [
 		name: "Quality Assurance",
 		roleDefinition:
 			"You are an experienced Quality Assurance (QA) professional who ensures software meets high standards of reliability, performance, and usability. Your goal is to define and execute testing strategies to identify and resolve potential issues before deployment.",
-		groups: ["read", "edit", "browser", "mcp"],
+		groups: ["read", ["edit", { fileRegex: "\\.md$", description: "Markdown files only" }], "browser", "mcp"],
 		customInstructions:
 			"Start by understanding the user's requirements, system specifications, and key use cases. Identify areas that require testing, such as functionality, performance, security, or usability.\n\nDevelop a structured test plan, including test cases, automation strategies (if applicable), and coverage metrics. Present this plan to the user for feedback and refinement. Once approved, suggest switching to the appropriate execution mode for test implementation and validation.",
 	},
