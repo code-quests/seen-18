@@ -281,14 +281,15 @@
 		"test:integration": "npm run build && npm run compile:integration && npx dotenvx run -f .env.integration -- vscode-test",
 		"prepare": "husky",
 		"publish:marketplace": "vsce publish",
-		"publish": "npm run build && changeset publish && npm install --package-lock-only",
-		"version-packages": "changeset version && npm install --package-lock-only",
 		"vscode:prepublish": "npm run package",
 		"vsix": "rimraf bin && mkdirp bin && npx vsce package --out bin",
 		"watch": "npm-run-all -p watch:*",
 		"watch:esbuild": "node esbuild.js --watch",
 		"watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-		"watch-tests": "tsc -p . -w --outDir out"
+		"watch-tests": "tsc -p . -w --outDir out",
+		"preversion": "git fetch --prune --prune-tags && npm run build ",
+		"version": "",
+		"postversion": "git push && git push --tags"
 	},
 	"dependencies": {
 		"@anthropic-ai/bedrock-sdk": "^0.10.2",
