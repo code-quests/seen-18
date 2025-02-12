@@ -35,6 +35,10 @@ export function activate(context: vscode.ExtensionContext) {
 		context.globalState.update("allowedCommands", defaultCommands)
 	}
 
+	// create a new status bar item that we can now manage
+	// statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	// statusBarItem.command = myCommandId;
+
 	const sidebarProvider = new ClineProvider(context, outputChannel)
 
 	context.subscriptions.push(

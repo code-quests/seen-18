@@ -138,6 +138,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 	public static readonly tabPanelId = "roo-cline.TabPanelProvider"
 	private static activeInstances: Set<ClineProvider> = new Set()
 	private disposables: vscode.Disposable[] = []
+	private statusBarItem?: vscode.StatusBarItem
 	private view?: vscode.WebviewView | vscode.WebviewPanel
 	private isViewLaunched = false
 	private cline?: Cline
@@ -2709,4 +2710,14 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 	public getMcpHub(): McpHub | undefined {
 		return this.mcpHub
 	}
+
+	// 	public updateStatusBarItem(): void {
+	// 		const n = getNumberOfSelectedLines(vscode.window.activeTextEditor);
+	// 		if (n > 0) {
+	// 			myStatusBarItem.text = `$(megaphone) ${n} line(s) selected`;
+	// 			myStatusBarItem.show();
+	// 		} else {
+	// 			myStatusBarItem.hide();
+	// 		}
+	// }
 }

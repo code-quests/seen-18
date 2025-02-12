@@ -64,7 +64,7 @@
 				{
 					"id": "seen18-ActivityBar",
 					"title": "Seen-18",
-					"icon": "$(seen18-home)"
+					"icon": "./assets/icons/seen.svg"
 				}
 			]
 		},
