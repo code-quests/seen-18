@@ -1,10 +1,10 @@
 {
-	"name": "roo-cline",
-	"displayName": "Roo Code (prev. Roo Cline)",
-	"description": "A VS Code plugin that enhances coding with AI-powered automation, multi-model support, and experimental features.",
-	"publisher": "RooVeterinaryInc",
-	"version": "3.3.17",
-	"icon": "assets/icons/rocket.png",
+	"name": "seen18",
+	"displayName": "Seen-18 by CodeQuests",
+	"description": "A VS Code extension that assists you with building complex software projects.",
+	"publisher": "code-quests",
+	"version": "1.0.2",
+	"icon": "assets/icons/icon.jpg",
 	"galleryBanner": {
 		"color": "#617A91",
 		"theme": "dark"
@@ -13,13 +13,13 @@
 		"vscode": "^1.84.0"
 	},
 	"author": {
-		"name": "Roo Vet"
+		"name": "CodeQuests"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/RooVetGit/Roo-Code"
+		"url": "https://github.com/code-quests/seen-18"
 	},
-	"homepage": "https://github.com/RooVetGit/Roo-Code",
+	"homepage": "https://github.com/code-quests/seen-18",
 	"categories": [
 		"AI",
 		"Chat",
@@ -41,8 +41,8 @@
 		"sonnet",
 		"ai",
 		"llama",
-		"roo code",
-		"roocode"
+		"seen-18",
+		"copilot"
 	],
 	"activationEvents": [
 		"onLanguage",
@@ -50,17 +50,26 @@
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
+		"icons": {
+			"seen18-home": {
+				"description": "Seen-18 activity",
+				"default": {
+					"fontPath": "./assets/fonts/seen-icons.woff",
+					"fontCharacter": "\\ea01"
+				}
+			}
+		},
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "roo-cline-ActivityBar",
-					"title": "Roo Code",
-					"icon": "$(rocket)"
+					"id": "seen18-ActivityBar",
+					"title": "Seen-18",
+					"icon": "$(seen18-home)"
 				}
 			]
 		},
 		"views": {
-			"roo-cline-ActivityBar": [
+			"seen18-ActivityBar": [
 				{
 					"type": "webview",
 					"id": "roo-cline.SidebarProvider",
@@ -69,6 +78,11 @@
 			]
 		},
 		"commands": [
+			{
+				"command": "roo-cline.toggleCompletions",
+				"title": "Enable/Disable Auto  Completions",
+				"icon": "$(wand)"
+			},
 			{
 				"command": "roo-cline.plusButtonClicked",
 				"title": "New Task",
@@ -102,51 +116,51 @@
 			{
 				"command": "roo-cline.openInNewTab",
 				"title": "Open In New Tab",
-				"category": "Roo Code"
+				"category": "Seen-18"
 			},
 			{
 				"command": "roo-cline.explainCode",
-				"title": "Roo Code: Explain Code",
-				"category": "Roo Code"
+				"title": "Seen-18: Explain Code",
+				"category": "Seen-18"
 			},
 			{
 				"command": "roo-cline.fixCode",
-				"title": "Roo Code: Fix Code",
-				"category": "Roo Code"
+				"title": "Seen-18: Fix Code",
+				"category": "Seen-18"
 			},
 			{
 				"command": "roo-cline.improveCode",
-				"title": "Roo Code: Improve Code",
-				"category": "Roo Code"
+				"title": "Seen-18: Improve Code",
+				"category": "Seen-18"
 			},
 			{
 				"command": "roo-cline.addToContext",
-				"title": "Roo Code: Add To Context",
-				"category": "Roo Code"
+				"title": "Seen-18: Add To Context",
+				"category": "Seen-18"
 			},
 			{
 				"command": "roo-cline.terminalAddToContext",
-				"title": "Roo Code: Add Terminal Content to Context",
+				"title": "Seen-18: Add Terminal Content to Context",
 				"category": "Terminal"
 			},
 			{
 				"command": "roo-cline.terminalFixCommand",
-				"title": "Roo Code: Fix This Command",
+				"title": "Seen-18: Fix This Command",
 				"category": "Terminal"
 			},
 			{
 				"command": "roo-cline.terminalExplainCommand",
-				"title": "Roo Code: Explain This Command",
+				"title": "Seen-18: Explain This Command",
 				"category": "Terminal"
 			},
 			{
 				"command": "roo-cline.terminalFixCommandInCurrentTask",
-				"title": "Roo Code: Fix This Command (Current Task)",
+				"title": "Seen-18: Fix This Command (Current Task)",
 				"category": "Terminal"
 			},
 			{
 				"command": "roo-cline.terminalExplainCommandInCurrentTask",
-				"title": "Roo Code: Explain This Command (Current Task)",
+				"title": "Seen-18: Explain This Command (Current Task)",
 				"category": "Terminal"
 			}
 		],
@@ -229,9 +243,9 @@
 			]
 		},
 		"configuration": {
-			"title": "Roo Code",
+			"title": "Seen-18",
 			"properties": {
-				"roo-cline.allowedCommands": {
+				"seen18.allowedCommands": {
 					"type": "array",
 					"items": {
 						"type": "string"
@@ -246,7 +260,7 @@
 					],
 					"description": "Commands that can be auto-executed when 'Always approve execute operations' is enabled"
 				},
-				"roo-cline.vsCodeLmModelSelector": {
+				"seen18.vsCodeLmModelSelector": {
 					"type": "object",
 					"properties": {
 						"vendor": {
@@ -263,10 +277,16 @@
 			}
 		}
 	},
+	"svgtofont": {
+		"css": false,
+		"website": false,
+		"emptyDist": true,
+		"outSVGReact": false
+	},
 	"scripts": {
-		"build": "npm run build:webview && npm run vsix",
+		"build": "npm run build:font && npm run build:webview && npm run vsix",
 		"build:webview": "cd webview-ui && npm run build",
-		"changeset": "changeset",
+		"build:font": "svgtofont --sources ./assets/svg --output ./assets/font --fontName seen18-icons",
 		"check-types": "tsc --noEmit",
 		"compile": "tsc -p . --outDir out && node esbuild.js",
 		"compile:integration": "tsc -p tsconfig.integration.json",
@@ -280,15 +300,16 @@
 		"test:webview": "cd webview-ui && npm run test",
 		"test:integration": "npm run build && npm run compile:integration && npx dotenvx run -f .env.integration -- vscode-test",
 		"prepare": "husky",
-		"publish:marketplace": "vsce publish && ovsx publish",
-		"publish": "npm run build && changeset publish && npm install --package-lock-only",
-		"version-packages": "changeset version && npm install --package-lock-only",
+		"publish:marketplace": "vsce publish",
 		"vscode:prepublish": "npm run package",
 		"vsix": "rimraf bin && mkdirp bin && npx vsce package --out bin",
 		"watch": "npm-run-all -p watch:*",
 		"watch:esbuild": "node esbuild.js --watch",
 		"watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-		"watch-tests": "tsc -p . -w --outDir out"
+		"watch-tests": "tsc -p . -w --outDir out",
+		"preversion": "git fetch --prune --prune-tags && npm run build ",
+		"version": "",
+		"postversion": "git push && git push --tags"
 	},
 	"dependencies": {
 		"@anthropic-ai/bedrock-sdk": "^0.10.2",
@@ -351,15 +372,16 @@
 		"@vscode/test-cli": "^0.0.9",
 		"@vscode/test-electron": "^2.4.0",
 		"esbuild": "^0.24.0",
-		"mkdirp": "^3.0.1",
-		"rimraf": "^6.0.1",
 		"eslint": "^8.57.0",
 		"husky": "^9.1.7",
 		"jest": "^29.7.0",
 		"jest-simple-dot-reporter": "^1.0.5",
 		"lint-staged": "^15.2.11",
+		"mkdirp": "^3.0.1",
 		"npm-run-all": "^4.1.5",
 		"prettier": "^3.4.2",
+		"rimraf": "^6.0.1",
+		"svgtofont": "^6.2.0",
 		"ts-jest": "^29.2.5",
 		"typescript": "^5.4.5"
 	},

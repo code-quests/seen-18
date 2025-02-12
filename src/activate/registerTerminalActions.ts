@@ -20,7 +20,7 @@ export const registerTerminalActions = (context: vscode.ExtensionContext) => {
 		terminalManager,
 		TERMINAL_COMMAND_IDS.FIX,
 		"TERMINAL_FIX",
-		"What would you like Roo to fix?",
+		"What would you like Seen-18 to fix?",
 	)
 
 	registerTerminalActionPair(
@@ -28,7 +28,7 @@ export const registerTerminalActions = (context: vscode.ExtensionContext) => {
 		terminalManager,
 		TERMINAL_COMMAND_IDS.EXPLAIN,
 		"TERMINAL_EXPLAIN",
-		"What would you like Roo to explain?",
+		"What would you like Seen-18 to explain?",
 	)
 }
 

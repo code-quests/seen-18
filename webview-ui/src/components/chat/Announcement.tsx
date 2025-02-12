@@ -28,34 +28,37 @@ const Announcement = ({ version, hideAnnouncement }: AnnouncementProps) => {
 				style={{ position: "absolute", top: "8px", right: "8px" }}>
 				<span className="codicon codicon-close"></span>
 			</VSCodeButton>
-			<h2 style={{ margin: "0 0 8px" }}>🎉{"  "}Introducing Roo Code 3.2</h2>
+			<h2 style={{ margin: "0 0 8px" }}>س-١٨ فى خدمتك 🔥</h2>
 
 			<p style={{ margin: "5px 0px" }}>
-				Our biggest update yet is here - we're officially changing our name from Roo Cline to Roo Code! After
-				growing beyond 50,000 installations, we're ready to chart our own course. Our heartfelt thanks to
-				everyone in the Cline community who helped us reach this milestone.
+				أول اصدار لمساعد برمجيات مفتوح المصدر متطور قادر على تبنى ٨ أدوار مختلفة و سنزيد من قدراتهم فى الأيام
+				المقبلة
 			</p>
 
-			<h3 style={{ margin: "12px 0 8px" }}>Custom Modes: Celebrating Our New Identity</h3>
 			<p style={{ margin: "5px 0px" }}>
-				To mark this new chapter, we're introducing the power to shape Roo Code into any role you need! Create
-				specialized personas and create an entire team of agents with deeply customized prompts:
+				فريق متكامل من المساعدين فى كل التخصصات التى يحتاجها تطوير البرمجيات
 				<ul style={{ margin: "4px 0 6px 20px", padding: 0 }}>
-					<li>QA Engineers who write thorough test cases and catch edge cases</li>
-					<li>Product Managers who excel at user stories and feature prioritization</li>
-					<li>UI/UX Designers who craft beautiful, accessible interfaces</li>
-					<li>Code Reviewers who ensure quality and maintainability</li>
+					<li>مدير مشاريع يهتم بتنسيق وترتيب و متابعة المهام</li>
+					<li>مدير منتجات يتابع السيناريوهات النختلفة ورحلة العميل</li>
+					<li>مدير تقنى يساعدك على حل المشكلات وتصميم الأنظمة</li>
+					<li>مدير جودة يساعدك على تطوير اختبارات</li>
 				</ul>
-				Just click the <span className="codicon codicon-notebook" style={{ fontSize: "10px" }}></span> icon to
-				get started with Custom Modes!
+				اضغط على أيقونة الدفتر <span className="codicon codicon-notebook" style={{ fontSize: "14px" }}></span>
+				لاضافة أو مراجعة تعليمات النموذج
 			</p>
 
-			<h3 style={{ margin: "12px 0 8px" }}>Join Us for the Next Chapter</h3>
+			<h3 style={{ margin: "12px 0 8px" }}>شاركنا فى تطوير أفضل مساعد لجيل المطورين العرب</h3>
 			<p style={{ margin: "5px 0px" }}>
-				We can't wait to see how you'll push Roo Code's potential even further! Share your custom modes and join
-				the discussion at{" "}
-				<VSCodeLink href="https://www.reddit.com/r/RooCode" style={{ display: "inline" }}>
-					reddit.com/r/RooCode
+				شاركنا بأفكارك ومشاريعك التى ستنتجها بمساعدة س-١٨ 💡{" "}
+				<VSCodeLink href="https://qabilah.com/hashtag/س18" style={{ display: "inline" }}>
+					https://qabilah.com/hashtag/س18
+				</VSCodeLink>
+				.
+			</p>
+			<p style={{ margin: "5px 0px" }}>
+				ترقبوا الإصدار القادم للفرق الاحترافية التي تتعاون في مشاريع كبيرة 💎{" "}
+				<VSCodeLink href="https://github.com/code-quests/seen-18" style={{ display: "inline" }}>
+					https://github.com/code-quests/seen-18
 				</VSCodeLink>
 				.
 			</p>

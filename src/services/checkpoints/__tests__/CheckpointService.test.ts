@@ -17,8 +17,8 @@ describe("CheckpointService", () => {
 
 	const initRepo = async ({
 		baseDir,
-		userName = "Roo Code",
-		userEmail = "support@roocode.com",
+		userName = "Seen-18",
+		userEmail = "support@code-quests.com",
 		testFileName = "test.txt",
 		textFileContent = "Hello, world!",
 	}: {

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</head>
+<body>
+    <!-- First Diagram: Architecture Overview -->
+    <div class="mermaid">
+        graph TD
+            %% Node definitions
+            A["DecorationController<br/>(Editor Integration)"]
+            B["Cline<br/>(Core Task Manager)"]
+            C["API Handler"]
+            D["Terminal Manager"]
+            E["UrlContentFetcher"]
+            F["BrowserSession"]
+            G["DiffViewProvider"]
+            H["CheckpointService"]
+            I["VSCode Workspace<br/>(Files, Tabs, Terminals)"]
+
+            %% Relationships with better labels
+            A -->|"Manages decorations"| I
+            B -->|"Uses"| C
+            B -->|"Uses"| D
+            B -->|"Uses"| E
+            B -->|"Uses"| F
+            B -->|"Uses"| G
+            B -->|"Uses"| H
+            I -->|"Provides context"| A
+    </div>
+
+    <!-- Second Diagram: Class Structure -->
+    <div class="mermaid">
+        classDiagram
+            %% Class relationships
+            ClineProvider "1" *-- "0..1" Cline : creates
+            CodeActionProvider ..> ClineProvider : uses
+            ClineProvider *-- DecorationController : manages
+
+            class ClineProvider {
+                +context ExtensionContext
+                +view WebviewView
+                +cline Cline
+                +decorationController DecorationController
+                +initClineWithTask()
+                +handleModeSwitch()
+                +updateApiConfiguration()
+            }
+
+            class Cline {
+                +taskId string
+                +api ApiHandler
+                +terminalManager TerminalManager
+                +browserSession BrowserSession
+                +diffViewProvider DiffViewProvider
+                +startTask()
+                +executeCommandTool()
+                +presentAssistantMessage()
+            }
+
+            class CodeActionProvider {
+                +providedCodeActionKinds
+                +createAction()
+                +createActionPair()
+                +provideCodeActions()
+            }
+
+            class DecorationController {
+                +decorations Map
+                +updateDecorations()
+                +clearDecorations()
+            }
+    </div>
+
+    <h2>Class Descriptions</h2>
+
+    <h3>ClineProvider</h3>
+    <p>The <code>ClineProvider</code> class is the main extension manager that:</p>
+    <ul>
+        <li>Manages the webview UI and extension lifecycle</li>
+        <li>Handles configuration and state management</li>
+        <li>Creates and controls Cline task instances</li>
+        <li>Coordinates API configurations and mode switching</li>
+        <li>Provides secret storage and workspace state persistence</li>
+    </ul>
+
+    <h3>Cline</h3>
+    <p>The <code>Cline</code> class is the core task execution engine that:</p>
+    <ul>
+        <li>Manages task execution and coordination</li>
+        <li>Handles API communication and response streaming</li>
+        <li>Controls terminal operations and browser sessions</li>
+        <li>Processes file differences and checkpoints</li>
+        <li>Coordinates tool execution and message presentation</li>
+    </ul>
+
+    <h3>CodeActionProvider</h3>
+    <p>The <code>CodeActionProvider</code> class implements VSCode's code action interface to:</p>
+    <ul>
+        <li>Provide quick fixes and refactor options in the editor</li>
+        <li>Create actions for explaining, fixing, and improving code</li>
+        <li>Handle code selections and diagnostic information</li>
+        <li>Integrate with Cline's task system through ClineProvider</li>
+    </ul>
+
+    <h3>DecorationController</h3>
+    <p>The <code>DecorationController</code> class manages editor decorations to:</p>
+    <ul>
+        <li>Highlight code regions being modified</li>
+        <li>Show visual indicators for code changes</li>
+        <li>Manage decoration lifecycle in the editor</li>
+    </ul>
+</body>
+</html>

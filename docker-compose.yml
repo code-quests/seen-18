@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  litellm:
+    build:
+      context: ./server
+      args:
+        target: runtime
+    image: ghcr.io/berriai/litellm:main-stable
+    ports:
+      - "4000:4000"
+    environment:
+      OPENAI_API_KEY: YOUR_OPENAI_API_KEY
+      ALLOWED_HOSTS: "*"
+      DATABASE_URL: "postgresql://litellm:litellm@db:5432/litellm"
+      STORE_MODEL_IN_DB: "True" # allows adding models to proxy via UI
+      LITELLM_MASTER_KEY: "sk-1234"
+    # volumes:
+      # - ./server/litellm/config.yaml:/app/config.yaml
+    # command:
+      # - "--config=/app/config.yaml"
+    depends_on:
+      - db
+  db:
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=litellm
+      - POSTGRES_PASSWORD=litellm
+      - POSTGRES_DB=litellm
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

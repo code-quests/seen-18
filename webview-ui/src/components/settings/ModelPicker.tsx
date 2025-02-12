@@ -121,7 +121,7 @@ export const ModelPicker = ({
 				<VSCodeLink style={{ display: "inline", fontSize: "inherit" }} href={serviceUrl}>
 					{serviceName}.
 				</VSCodeLink>
-				If you're unsure which model to choose, Roo Code works best with{" "}
+				If you're unsure which model to choose, Seen-18 works best with{" "}
 				<VSCodeLink onClick={() => onSelect(recommendedModel)}>{recommendedModel}.</VSCodeLink>
 				You can also try searching "free" for no-cost options currently available.
 			</p>
