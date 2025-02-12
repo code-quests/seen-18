@@ -9,7 +9,7 @@ export const registerCodeActions = (context: vscode.ExtensionContext) => {
 		context,
 		COMMAND_IDS.EXPLAIN,
 		"EXPLAIN",
-		"What would you like Roo to explain?",
+		"What would you like seen-18 to explain?",
 		"E.g. How does the error handling work?",
 	)
 
