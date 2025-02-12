@@ -3,7 +3,7 @@
 	"displayName": "Seen-18 by CodeQuests",
 	"description": "A VS Code extension that assists you with building complex software projects.",
 	"publisher": "code-quests",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"icon": "assets/icons/icon.jpg",
 	"galleryBanner": {
 		"color": "#617A91",
@@ -54,7 +54,7 @@
 			"seen18-home": {
 				"description": "Seen-18 activity",
 				"default": {
-					"fontPath": "./assets/fonts/seen-icons.woff",
+					"fontPath": "assets/fonts/seen-icons.woff",
 					"fontCharacter": "\\ea01"
 				}
 			}
@@ -64,7 +64,7 @@
 				{
 					"id": "seen18-ActivityBar",
 					"title": "Seen-18",
-					"icon": "$(seen18-home)"
+					"icon": "assets/icons/seen.svg"
 				}
 			]
 		},
@@ -309,7 +309,8 @@
 		"watch-tests": "tsc -p . -w --outDir out",
 		"preversion": "git fetch --prune --prune-tags && npm run build ",
 		"version": "",
-		"postversion": "git push && git push --tags"
+		"postversion": "git push && git push --tags",
+		"try": "npm run build && current_package_version=$(node -p \"require('./package.json').version\") && code --uninstall-extension code-quests.seen18 && code --install-extension bin/seen18-${current_package_version}.vsix"
 	},
 	"dependencies": {
 		"@anthropic-ai/bedrock-sdk": "^0.10.2",
