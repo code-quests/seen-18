@@ -106,13 +106,13 @@ Otherwise, if you have not completed the task and do not need additional informa
 			: sorted
 
 		if (didHitLimit) {
-			return `${sorted.join(
+			return `${clineIgnoreParsed.join(
 				"\n",
 			)}\n\n(File list truncated. Use list_files on specific subdirectories if you need to explore further.)`
-		} else if (sorted.length === 0 || (sorted.length === 1 && sorted[0] === "")) {
+		} else if (clineIgnoreParsed.length === 0 || (clineIgnoreParsed.length === 1 && clineIgnoreParsed[0] === "")) {
 			return "No files found."
 		} else {
-			return sorted.join("\n")
+			return clineIgnoreParsed.join("\n")
 		}
 	},
 

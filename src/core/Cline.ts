@@ -1935,6 +1935,12 @@ export class Cline {
 									pushToolResult(await this.sayAndCreateMissingParamError("read_file", "path"))
 									break
 								}
+								const accessAllowed = this.clineIgnoreController.validateAccess(relPath)
+								if (!accessAllowed) {
+									await this.say("clineignore_error", relPath)
+									pushToolResult(formatResponse.toolError(formatResponse.clineIgnoreError(relPath)))
+									break
+								}
 								this.consecutiveMistakeCount = 0
 								const absolutePath = path.resolve(cwd, relPath)
 								const completeMessage = JSON.stringify({
