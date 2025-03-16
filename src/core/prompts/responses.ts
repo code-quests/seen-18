@@ -1,6 +1,7 @@
 import { Anthropic } from "@anthropic-ai/sdk"
 import * as path from "path"
 import * as diff from "diff"
+import { ClineIgnoreController, LOCK_TEXT_SYMBOL } from "../ignore/ClineIgnoreController"
 
 export const formatResponse = {
 	toolDenied: () => `The user denied this operation.`,
@@ -12,6 +13,9 @@ export const formatResponse = {
 		`The user approved this operation and provided the following context:\n<feedback>\n${feedback}\n</feedback>`,
 
 	toolError: (error?: string) => `The tool execution failed with the following error:\n<error>\n${error}\n</error>`,
+
+	clineIgnoreError: (path: string) =>
+		`Access to ${path} is blocked by the .clineignore file settings. You must try to continue in the task without using this file, or ask the user to update the .clineignore file.`,
 
 	noToolsUsed: () =>
 		`[ERROR] You did not use a tool in your previous response! Please retry with a tool use.
@@ -52,7 +56,12 @@ Otherwise, if you have not completed the task and do not need additional informa
 		return formatImagesIntoBlocks(images)
 	},
 
-	formatFilesList: (absolutePath: string, files: string[], didHitLimit: boolean): string => {
+	formatFilesList: (
+		absolutePath: string,
+		files: string[],
+		didHitLimit: boolean,
+		clineIgnoreController?: ClineIgnoreController,
+	): string => {
 		const sorted = files
 			.map((file) => {
 				// convert absolute path to relative path
@@ -80,6 +89,22 @@ Otherwise, if you have not completed the task and do not need additional informa
 				// the shorter one comes first
 				return aParts.length - bParts.length
 			})
+
+		const clineIgnoreParsed = clineIgnoreController
+			? sorted.map((filePath) => {
+					// path is relative to absolute path, not cwd
+					// validateAccess expects either path relative to cwd or absolute path
+					// otherwise, for validating against ignore patterns like "assets/icons", we would end up with just "icons", which would result in the path not being ignored.
+					const absoluteFilePath = path.resolve(absolutePath, filePath)
+					const isIgnored = !clineIgnoreController.validateAccess(absoluteFilePath)
+					if (isIgnored) {
+						return LOCK_TEXT_SYMBOL + " " + filePath
+					}
+
+					return filePath
+				})
+			: sorted
+
 		if (didHitLimit) {
 			return `${sorted.join(
 				"\n",

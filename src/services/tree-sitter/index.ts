@@ -3,9 +3,13 @@ import * as path from "path"
 import { listFiles } from "../glob/list-files"
 import { LanguageParser, loadRequiredLanguageParsers } from "./languageParser"
 import { fileExistsAtPath } from "../../utils/fs"
+import { ClineIgnoreController } from "../../core/ignore/ClineIgnoreController"
 
 // TODO: implement caching behavior to avoid having to keep analyzing project for new tasks.
-export async function parseSourceCodeForDefinitionsTopLevel(dirPath: string): Promise<string> {
+export async function parseSourceCodeForDefinitionsTopLevel(
+	dirPath: string,
+	clineIgnoreController?: ClineIgnoreController,
+): Promise<string> {
 	// check if the path exists
 	const dirExists = await fileExistsAtPath(path.resolve(dirPath))
 	if (!dirExists) {
@@ -22,10 +26,13 @@ export async function parseSourceCodeForDefinitionsTopLevel(dirPath: string): Pr
 
 	const languageParsers = await loadRequiredLanguageParsers(filesToParse)
 
+	// Filter filepaths for access if controller is provided
+	const allowedFilesToParse = clineIgnoreController ? clineIgnoreController.filterPaths(filesToParse) : filesToParse
+
 	// Parse specific files we have language parsers for
 	// const filesWithoutDefinitions: string[] = []
 	for (const file of filesToParse) {
-		const definitions = await parseFile(file, languageParsers)
+		const definitions = await parseFile(file, languageParsers, clineIgnoreController)
 		if (definitions) {
 			result += `${path.relative(dirPath, file).toPosix()}\n${definitions}\n`
 		}
@@ -95,7 +102,14 @@ This approach allows us to focus on the most relevant parts of the code (defined
 - https://github.com/tree-sitter/tree-sitter/blob/master/lib/binding_web/test/helper.js
 - https://tree-sitter.github.io/tree-sitter/code-navigation-systems
 */
-async function parseFile(filePath: string, languageParsers: LanguageParser): Promise<string | undefined> {
+async function parseFile(
+	filePath: string,
+	languageParsers: LanguageParser,
+	clineIgnoreController?: ClineIgnoreController,
+): Promise<string | null> {
+	if (clineIgnoreController && !clineIgnoreController.validateAccess(filePath)) {
+		return null
+	}
 	const fileContent = await fs.readFile(filePath, "utf8")
 	const ext = path.extname(filePath).toLowerCase().slice(1)
 
@@ -156,5 +170,5 @@ async function parseFile(filePath: string, languageParsers: LanguageParser): Pro
 	if (formattedOutput.length > 0) {
 		return `|----\n${formattedOutput}|----\n`
 	}
-	return undefined
+	return null
 }

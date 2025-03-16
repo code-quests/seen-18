@@ -46,8 +46,10 @@ export async function listFiles(dirPath: string, recursive: boolean, limit: numb
 		onlyFiles: false, // true by default, false means it will list directories on their own too
 	}
 	// * globs all files in one dir, ** globs files in nested directories
-	const files = recursive ? await globbyLevelByLevel(limit, options) : (await globby("*", options)).slice(0, limit)
-	return [files, files.length >= limit]
+	const filepaths = recursive
+		? await globbyLevelByLevel(limit, options)
+		: (await globby("*", options)).slice(0, limit)
+	return [filepaths, filepaths.length >= limit]
 }
 
 /*

@@ -51,6 +51,7 @@ import { fileExistsAtPath } from "../utils/fs"
 import { arePathsEqual, getReadablePath } from "../utils/path"
 import { parseMentions } from "./mentions"
 import { AssistantMessageContent, parseAssistantMessage, ToolParamName, ToolUseName } from "./assistant-message"
+import { ClineIgnoreController, LOCK_TEXT_SYMBOL } from "./ignore/ClineIgnoreController"
 import { formatResponse } from "./prompts/responses"
 import { SYSTEM_PROMPT } from "./prompts/system"
 import { modes, defaultModeSlug, getModeBySlug } from "../shared/modes"
@@ -86,6 +87,7 @@ export class Cline {
 
 	apiConversationHistory: (Anthropic.MessageParam & { ts?: number })[] = []
 	clineMessages: ClineMessage[] = []
+	private clineIgnoreController: ClineIgnoreController
 	private askResponse?: ClineAskResponse
 	private askResponseText?: string
 	private askResponseImages?: string[]
@@ -129,6 +131,11 @@ export class Cline {
 		historyItem?: HistoryItem | undefined,
 		experiments?: Record<string, boolean>,
 	) {
+		this.clineIgnoreController = new ClineIgnoreController(cwd)
+		this.clineIgnoreController.initialize().catch((error) => {
+			console.error("Failed to initialize ClineIgnoreController:", error)
+		})
+
 		if (!task && !images && !historyItem) {
 			throw new Error("Either historyItem or task/images must be provided")
 		}
@@ -732,6 +739,7 @@ export class Cline {
 		this.browserSession.closeBrowser()
 		// Need to await for when we want to make sure directories/files are
 		// reverted before re-starting the task from a checkpoint.
+		this.clineIgnoreController.dispose()
 		await this.diffViewProvider.revertChanges()
 	}
 
@@ -864,6 +872,14 @@ export class Cline {
 			})
 		}
 
+		const clineIgnoreContent = this.clineIgnoreController.clineIgnoreContent
+		let clineIgnoreInstructions: string | undefined
+		if (clineIgnoreContent) {
+			clineIgnoreInstructions = `# .clineignore\n\n(The following is provided by a root-level .clineignore file where the user has specified files and directories that should not be accessed. When using list_files, you'll notice a ${LOCK_TEXT_SYMBOL} next to files that are blocked. Attempting to access the file's contents e.g. through read_file will result in an error.)\n\n${clineIgnoreContent}\n.clineignore`
+			// altering the system prompt mid-task will break the prompt cache, but in the grand scheme this will not change often so it's better to not pollute user messages with it the way we have to with <potentially relevant details>
+			this.customInstructions += clineIgnoreInstructions
+		}
+
 		const {
 			browserViewportSize,
 			mode,
@@ -944,6 +960,7 @@ export class Cline {
 			}
 			return { role, content }
 		})
+
 		const stream = this.api.createMessage(systemPrompt, cleanConversationHistory)
 		const iterator = stream[Symbol.asyncIterator]()
 
@@ -1257,6 +1274,16 @@ export class Cline {
 							// wait so we can determine if it's a new file or editing an existing file
 							break
 						}
+
+						// check if file is allowed to be accessed
+						const accessAllowed = this.clineIgnoreController.validateAccess(relPath)
+						if (!accessAllowed) {
+							await this.say("clineignore_error", relPath)
+							pushToolResult(formatResponse.toolError(formatResponse.clineIgnoreError(relPath)))
+
+							break
+						}
+
 						// Check if file exists using cached map or fs.access
 						let fileExists: boolean
 						if (this.diffViewProvider.editType !== undefined) {
@@ -1331,6 +1358,15 @@ export class Cline {
 									await this.diffViewProvider.reset()
 									break
 								}
+
+								const accessAllowed = this.clineIgnoreController.validateAccess(relPath)
+								if (!accessAllowed) {
+									await this.say("clineignore_error", relPath)
+									pushToolResult(formatResponse.toolError(formatResponse.clineIgnoreError(relPath)))
+
+									break
+								}
+
 								this.consecutiveMistakeCount = 0
 
 								// if isEditingFile false, that means we have the full contents of the file already.
@@ -1944,7 +1980,12 @@ export class Cline {
 								this.consecutiveMistakeCount = 0
 								const absolutePath = path.resolve(cwd, relDirPath)
 								const [files, didHitLimit] = await listFiles(absolutePath, recursive, 200)
-								const result = formatResponse.formatFilesList(absolutePath, files, didHitLimit)
+								const result = formatResponse.formatFilesList(
+									absolutePath,
+									files,
+									didHitLimit,
+									this.clineIgnoreController,
+								)
 								const completeMessage = JSON.stringify({
 									...sharedMessageProps,
 									content: result,
@@ -1985,7 +2026,10 @@ export class Cline {
 								}
 								this.consecutiveMistakeCount = 0
 								const absolutePath = path.resolve(cwd, relDirPath)
-								const result = await parseSourceCodeForDefinitionsTopLevel(absolutePath)
+								const result = await parseSourceCodeForDefinitionsTopLevel(
+									absolutePath,
+									this.clineIgnoreController,
+								)
 								const completeMessage = JSON.stringify({
 									...sharedMessageProps,
 									content: result,
@@ -2033,7 +2077,13 @@ export class Cline {
 								}
 								this.consecutiveMistakeCount = 0
 								const absolutePath = path.resolve(cwd, relDirPath)
-								const results = await regexSearchFiles(cwd, absolutePath, regex, filePattern)
+								const results = await regexSearchFiles(
+									cwd,
+									absolutePath,
+									regex,
+									filePattern,
+									this.clineIgnoreController,
+								)
 								const completeMessage = JSON.stringify({
 									...sharedMessageProps,
 									content: results,
@@ -2213,6 +2263,18 @@ export class Cline {
 									break
 								}
 								this.consecutiveMistakeCount = 0
+
+								const ignoredFileAttemptedToAccess = this.clineIgnoreController.validateCommand(command)
+								if (ignoredFileAttemptedToAccess) {
+									await this.say("clineignore_error", ignoredFileAttemptedToAccess)
+									pushToolResult(
+										formatResponse.toolError(
+											formatResponse.clineIgnoreError(ignoredFileAttemptedToAccess),
+										),
+									)
+
+									break
+								}
 
 								const didApprove = await askApproval("command", command)
 								if (!didApprove) {
@@ -3067,26 +3129,38 @@ export class Cline {
 
 		// It could be useful for cline to know if the user went from one or no file to another between messages, so we always include this context
 		details += "\n\n# VSCode Visible Files"
-		const visibleFiles = vscode.window.visibleTextEditors
+		const visibleFilePaths = vscode.window.visibleTextEditors
 			?.map((editor) => editor.document?.uri?.fsPath)
 			.filter(Boolean)
 			.map((absolutePath) => path.relative(cwd, absolutePath).toPosix())
+
+		// Filter paths through clineIgnoreController
+		const allowedVisibleFiles = this.clineIgnoreController
+			.filterPaths(visibleFilePaths)
+			.map((p) => p.toPosix())
 			.join("\n")
-		if (visibleFiles) {
-			details += `\n${visibleFiles}`
+
+		if (allowedVisibleFiles) {
+			details += `\n${allowedVisibleFiles}`
 		} else {
 			details += "\n(No visible files)"
 		}
 
 		details += "\n\n# VSCode Open Tabs"
-		const openTabs = vscode.window.tabGroups.all
+		const openTabPaths = vscode.window.tabGroups.all
 			.flatMap((group) => group.tabs)
 			.map((tab) => (tab.input as vscode.TabInputText)?.uri?.fsPath)
 			.filter(Boolean)
 			.map((absolutePath) => path.relative(cwd, absolutePath).toPosix())
+
+		// Filter paths through clineIgnoreController
+		const allowedOpenTabs = this.clineIgnoreController
+			.filterPaths(openTabPaths)
+			.map((p) => p.toPosix())
 			.join("\n")
-		if (openTabs) {
-			details += `\n${openTabs}`
+
+		if (allowedOpenTabs) {
+			details += `\n${allowedOpenTabs}`
 		} else {
 			details += "\n(No open tabs)"
 		}
@@ -3225,11 +3299,11 @@ export class Cline {
 				details += "(Desktop files not shown automatically. Use list_files to explore if needed.)"
 			} else {
 				const [files, didHitLimit] = await listFiles(cwd, true, 200)
-				const result = formatResponse.formatFilesList(cwd, files, didHitLimit)
+				const result = formatResponse.formatFilesList(cwd, files, didHitLimit, this.clineIgnoreController)
 				details += result
 			}
 		}
-
+		console.log("Environment details:", details)
 		return `<environment_details>\n${details.trim()}\n</environment_details>`
 	}
 

@@ -131,6 +131,7 @@ export const GlobalFileNames = {
 	openRouterModels: "openrouter_models.json",
 	mcpSettings: "cline_mcp_settings.json",
 	unboundModels: "unbound_models.json",
+	clineRules: ".clinerules",
 }
 
 export class ClineProvider implements vscode.WebviewViewProvider {
