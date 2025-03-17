@@ -3,6 +3,7 @@ import * as childProcess from "child_process"
 import * as path from "path"
 import * as fs from "fs"
 import * as readline from "readline"
+import { ClineIgnoreController } from "../../core/ignore/ClineIgnoreController"
 
 /*
 This file provides functionality to perform regex searches on files using ripgrep.
@@ -50,7 +51,7 @@ const isWindows = /^win/.test(process.platform)
 const binName = isWindows ? "rg.exe" : "rg"
 
 interface SearchResult {
-	file: string
+	filepath: string
 	line: number
 	column: number
 	match: string
@@ -127,6 +128,7 @@ export async function regexSearchFiles(
 	directoryPath: string,
 	regex: string,
 	filePattern?: string,
+	clineIgnoreController?: ClineIgnoreController,
 ): Promise<string> {
 	const vscodeAppRoot = vscode.env.appRoot
 	const rgPath = await getBinPath(vscodeAppRoot)
@@ -155,7 +157,7 @@ export async function regexSearchFiles(
 						results.push(currentResult as SearchResult)
 					}
 					currentResult = {
-						file: parsed.data.path.text,
+						filepath: parsed.data.path.text,
 						line: parsed.data.line_number,
 						column: parsed.data.submatches[0].start,
 						match: parsed.data.lines.text,
@@ -178,8 +180,12 @@ export async function regexSearchFiles(
 	if (currentResult) {
 		results.push(currentResult as SearchResult)
 	}
+	// Filter results using ClineIgnoreController if provided
+	const filteredResults = clineIgnoreController
+		? results.filter((result) => clineIgnoreController.validateAccess(result.filepath))
+		: results
 
-	return formatResults(results, cwd)
+	return formatResults(filteredResults, cwd)
 }
 
 function formatResults(results: SearchResult[], cwd: string): string {
@@ -194,7 +200,7 @@ function formatResults(results: SearchResult[], cwd: string): string {
 
 	// Group results by file name
 	results.slice(0, MAX_RESULTS).forEach((result) => {
-		const relativeFilePath = path.relative(cwd, result.file)
+		const relativeFilePath = path.relative(cwd, result.filepath)
 		if (!groupedResults[relativeFilePath]) {
 			groupedResults[relativeFilePath] = []
 		}

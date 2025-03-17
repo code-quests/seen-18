@@ -367,6 +367,7 @@
 		"@types/jest": "^29.5.14",
 		"@types/mocha": "^10.0.7",
 		"@types/node": "20.x",
+		"@types/should": "^13.0.0",
 		"@types/string-similarity": "^4.0.2",
 		"@typescript-eslint/eslint-plugin": "^7.14.1",
 		"@typescript-eslint/parser": "^7.11.0",
@@ -382,6 +383,7 @@
 		"npm-run-all": "^4.1.5",
 		"prettier": "^3.4.2",
 		"rimraf": "^6.0.1",
+		"should": "^13.2.3",
 		"svgtofont": "^6.2.0",
 		"ts-jest": "^29.2.5",
 		"typescript": "^5.4.5"

@@ -175,6 +175,7 @@ export type ClineSay =
 	| "mcp_server_response"
 	| "new_task_started"
 	| "new_task"
+	| "clineignore_error"
 	| "checkpoint_saved"
 
 export interface ClineSayTool {
