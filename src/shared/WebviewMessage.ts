@@ -90,6 +90,7 @@ export interface WebviewMessage {
 		| "openCustomModesSettings"
 		| "checkpointDiff"
 		| "checkpointRestore"
+		| "refreshLiteLLMModels"
 	text?: string
 	disabled?: boolean
 	askResponse?: ClineAskResponse

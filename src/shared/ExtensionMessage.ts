@@ -45,6 +45,8 @@ export interface ExtensionMessage {
 		| "unboundModels"
 		| "refreshUnboundModels"
 		| "currentCheckpointUpdated"
+		| "refreshLiteLLMModels"
+		| "litellmModels"
 	text?: string
 	action?:
 		| "chatButtonClicked"
@@ -76,6 +78,7 @@ export interface ExtensionMessage {
 	mode?: Mode
 	customMode?: ModeConfig
 	slug?: string
+	litellmModels?: Record<string, ModelInfo>
 }
 
 export interface ApiConfigMeta {
@@ -125,6 +128,7 @@ export interface ExtensionState {
 	autoApprovalEnabled?: boolean
 	customModes: ModeConfig[]
 	toolRequirements?: Record<string, boolean> // Map of tool names to their requirements (e.g. {"apply_diff": true} if diffEnabled)
+	litellmModels?: Record<string, ModelInfo>
 }
 
 export interface ClineMessage {

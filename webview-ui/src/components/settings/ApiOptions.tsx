@@ -29,6 +29,8 @@ import {
 	vertexModels,
 	unboundDefaultModelId,
 	unboundDefaultModelInfo,
+	litellmDefaultModelId,
+	litellmDefaultModelInfo,
 } from "../../../../src/shared/api"
 import { ExtensionMessage } from "../../../../src/shared/ExtensionMessage"
 import { useExtensionState } from "../../context/ExtensionStateContext"
@@ -40,6 +42,7 @@ import { GlamaModelPicker } from "./GlamaModelPicker"
 import { UnboundModelPicker } from "./UnboundModelPicker"
 import { ModelInfoView } from "./ModelInfoView"
 import { DROPDOWN_Z_INDEX } from "./styles"
+import { LiteLLMModelPicker } from "./LiteLLMModelPicker"
 
 interface ApiOptionsProps {
 	apiErrorMessage?: string
@@ -153,6 +156,7 @@ const ApiOptions = ({ apiErrorMessage, modelIdErrorMessage }: ApiOptionsProps) =
 						{ value: "lmstudio", label: "LM Studio" },
 						{ value: "ollama", label: "Ollama" },
 						{ value: "unbound", label: "Unbound" },
+						{ value: "litellm", label: "LiteLLM" },
 					]}
 				/>
 			</div>
@@ -1319,27 +1323,50 @@ const ApiOptions = ({ apiErrorMessage, modelIdErrorMessage }: ApiOptionsProps) =
 				</div>
 			)}
 
-			{apiErrorMessage && (
-				<p
-					style={{
-						margin: "-10px 0 4px 0",
-						fontSize: 12,
-						color: "var(--vscode-errorForeground)",
-					}}>
-					{apiErrorMessage}
-				</p>
+			{selectedProvider === "litellm" && (
+				<div>
+					<VSCodeTextField
+						value={apiConfiguration?.litellmApiKey || ""}
+						style={{ width: "100%" }}
+						type="password"
+						onBlur={handleInputChange("litellmApiKey")}
+						placeholder="Enter API Key...">
+						<span style={{ fontWeight: 500 }}>LiteLLM API Key</span>
+					</VSCodeTextField>
+					<VSCodeTextField
+						value={apiConfiguration?.litellmBaseUrl || ""}
+						style={{ width: "100%", marginTop: 10 }}
+						type="url"
+						onBlur={handleInputChange("litellmBaseUrl")}
+						placeholder="Enter Base URL...">
+						<span style={{ fontWeight: 500 }}>LiteLLM Base URL</span>
+					</VSCodeTextField>
+					<p
+						style={{
+							fontSize: "12px",
+							marginTop: 3,
+							color: "var(--vscode-descriptionForeground)",
+						}}>
+						This key is stored locally and only used to make API requests from this extension.
+						{!apiConfiguration?.litellmApiKey && (
+							<VSCodeLink
+								href="https://docs.litellm.ai/docs/"
+								style={{ display: "inline", fontSize: "inherit" }}>
+								You can learn more about LiteLLM here.
+							</VSCodeLink>
+						)}
+					</p>
+					<LiteLLMModelPicker />
+				</div>
 			)}
-
-			{selectedProvider === "glama" && <GlamaModelPicker />}
-
-			{selectedProvider === "openrouter" && <OpenRouterModelPicker />}
 
 			{selectedProvider !== "glama" &&
 				selectedProvider !== "openrouter" &&
 				selectedProvider !== "openai" &&
 				selectedProvider !== "ollama" &&
 				selectedProvider !== "lmstudio" &&
-				selectedProvider !== "unbound" && (
+				selectedProvider !== "unbound" &&
+				selectedProvider !== "litellm" && (
 					<>
 						<div className="dropdown-container">
 							<label htmlFor="model-id">
@@ -1362,6 +1389,21 @@ const ApiOptions = ({ apiErrorMessage, modelIdErrorMessage }: ApiOptionsProps) =
 						/>
 					</>
 				)}
+
+			{apiErrorMessage && (
+				<p
+					style={{
+						margin: "-10px 0 4px 0",
+						fontSize: 12,
+						color: "var(--vscode-errorForeground)",
+					}}>
+					{apiErrorMessage}
+				</p>
+			)}
+
+			{selectedProvider === "glama" && <GlamaModelPicker />}
+
+			{selectedProvider === "openrouter" && <OpenRouterModelPicker />}
 
 			{modelIdErrorMessage && (
 				<p
@@ -1464,6 +1506,12 @@ export function normalizeApiConfiguration(apiConfiguration?: ApiConfiguration) {
 				selectedProvider: provider,
 				selectedModelId: apiConfiguration?.unboundModelId || unboundDefaultModelId,
 				selectedModelInfo: apiConfiguration?.unboundModelInfo || unboundDefaultModelInfo,
+			}
+		case "litellm":
+			return {
+				selectedProvider: provider,
+				selectedModelId: apiConfiguration?.litellmModelId || litellmDefaultModelId,
+				selectedModelInfo: apiConfiguration?.litellmModelInfo || litellmDefaultModelInfo,
 			}
 		default:
 			return getProviderData(anthropicModels, anthropicDefaultModelId)

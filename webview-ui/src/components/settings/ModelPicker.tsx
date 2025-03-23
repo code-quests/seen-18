@@ -25,10 +25,14 @@ import { ModelInfoView } from "./ModelInfoView"
 
 interface ModelPickerProps {
 	defaultModelId: string
-	modelsKey: "glamaModels" | "openRouterModels" | "unboundModels"
-	configKey: "glamaModelId" | "openRouterModelId" | "unboundModelId"
-	infoKey: "glamaModelInfo" | "openRouterModelInfo" | "unboundModelInfo"
-	refreshMessageType: "refreshGlamaModels" | "refreshOpenRouterModels" | "refreshUnboundModels"
+	modelsKey: "glamaModels" | "openRouterModels" | "unboundModels" | "litellmModels"
+	configKey: "glamaModelId" | "openRouterModelId" | "unboundModelId" | "litellmModelId"
+	infoKey: "glamaModelInfo" | "openRouterModelInfo" | "unboundModelInfo" | "litellmModelInfo"
+	refreshMessageType:
+		| "refreshGlamaModels"
+		| "refreshOpenRouterModels"
+		| "refreshUnboundModels"
+		| "refreshLiteLLMModels"
 	serviceName: string
 	serviceUrl: string
 	recommendedModel: string
@@ -68,7 +72,7 @@ export const ModelPicker = ({
 	)
 
 	const debouncedRefreshModels = useMemo(
-		() => debounce(() => vscode.postMessage({ type: refreshMessageType }), 50),
+		() => debounce(() => vscode.postMessage({ type: refreshMessageType as any }), 50),
 		[refreshMessageType],
 	)
 

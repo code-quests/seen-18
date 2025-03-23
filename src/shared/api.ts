@@ -2,19 +2,20 @@ import * as vscode from "vscode"
 
 export type ApiProvider =
 	| "anthropic"
-	| "glama"
-	| "openrouter"
 	| "bedrock"
 	| "vertex"
+	| "gemini"
 	| "openai"
+	| "openai-native"
+	| "openrouter"
+	| "glama"
 	| "ollama"
 	| "lmstudio"
-	| "gemini"
-	| "openai-native"
-	| "deepseek"
 	| "vscode-lm"
+	| "deepseek"
 	| "mistral"
 	| "unbound"
+	| "litellm"
 
 export interface ApiHandlerOptions {
 	apiModelId?: string
@@ -66,6 +67,10 @@ export interface ApiHandlerOptions {
 export type ApiConfiguration = ApiHandlerOptions & {
 	apiProvider?: ApiProvider
 	id?: string // stable unique identifier
+	litellmApiKey?: string
+	litellmBaseUrl?: string
+	litellmModelId?: string
+	litellmModelInfo?: ModelInfo
 }
 
 // Models
@@ -659,6 +664,21 @@ export const unboundDefaultModelInfo: ModelInfo = {
 	supportsPromptCache: true,
 	inputPrice: 3.0,
 	outputPrice: 15.0,
+	cacheWritesPrice: 3.75,
+	cacheReadsPrice: 0.3,
+}
+
+// LiteLLM
+export const litellmDefaultModelId = "anthropic/claude-3-5-sonnet"
+export const litellmDefaultModelInfo: ModelInfo = {
+	contextWindow: 200000,
+	description: "Claude 3.5 Sonnet - Anthropic's most capable model with excellent reasoning and tool use abilities.",
+	inputPrice: 3,
+	maxTokens: 4096,
+	outputPrice: 15,
+	supportsImages: true,
+	supportsComputerUse: true,
+	supportsPromptCache: true,
 	cacheWritesPrice: 3.75,
 	cacheReadsPrice: 0.3,
 }
