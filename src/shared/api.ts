@@ -68,9 +68,9 @@ export type ApiConfiguration = ApiHandlerOptions & {
 	apiProvider?: ApiProvider
 	id?: string // stable unique identifier
 	litellmApiKey?: string
-	litellmBaseUrl?: string
 	litellmModelId?: string
 	litellmModelInfo?: ModelInfo
+	// litellmBaseUrl is now handled internally
 }
 
 // Models

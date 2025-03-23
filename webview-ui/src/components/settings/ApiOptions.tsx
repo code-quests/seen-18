@@ -43,6 +43,7 @@ import { UnboundModelPicker } from "./UnboundModelPicker"
 import { ModelInfoView } from "./ModelInfoView"
 import { DROPDOWN_Z_INDEX } from "./styles"
 import { LiteLLMModelPicker } from "./LiteLLMModelPicker"
+import { LITELLM_BASE_URL } from "../../../../src/shared/constants"
 
 interface ApiOptionsProps {
 	apiErrorMessage?: string
@@ -1333,14 +1334,6 @@ const ApiOptions = ({ apiErrorMessage, modelIdErrorMessage }: ApiOptionsProps) =
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>LiteLLM API Key</span>
 					</VSCodeTextField>
-					<VSCodeTextField
-						value={apiConfiguration?.litellmBaseUrl || ""}
-						style={{ width: "100%", marginTop: 10 }}
-						type="url"
-						onBlur={handleInputChange("litellmBaseUrl")}
-						placeholder="Enter Base URL...">
-						<span style={{ fontWeight: 500 }}>LiteLLM Base URL</span>
-					</VSCodeTextField>
 					<p
 						style={{
 							fontSize: "12px",
@@ -1355,6 +1348,15 @@ const ApiOptions = ({ apiErrorMessage, modelIdErrorMessage }: ApiOptionsProps) =
 								You can learn more about LiteLLM here.
 							</VSCodeLink>
 						)}
+					</p>
+					<p
+						style={{
+							fontSize: "12px",
+							marginTop: 3,
+							color: "var(--vscode-descriptionForeground)",
+						}}>
+						Using LiteLLM proxy at <code>http://0.0.0.0:4000</code>. This can be configured in the extension
+						settings.
 					</p>
 					<LiteLLMModelPicker />
 				</div>
@@ -1512,6 +1514,7 @@ export function normalizeApiConfiguration(apiConfiguration?: ApiConfiguration) {
 				selectedProvider: provider,
 				selectedModelId: apiConfiguration?.litellmModelId || litellmDefaultModelId,
 				selectedModelInfo: apiConfiguration?.litellmModelInfo || litellmDefaultModelInfo,
+				litellmBaseUrl: LITELLM_BASE_URL,
 			}
 		default:
 			return getProviderData(anthropicModels, anthropicDefaultModelId)

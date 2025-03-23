@@ -143,13 +143,10 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 	)
 
 	const onUpdateApiConfig = useCallback((apiConfig: ApiConfiguration) => {
-		setState((currentState) => {
-			vscode.postMessage({
-				type: "upsertApiConfiguration",
-				text: currentState.currentApiConfigName,
-				apiConfiguration: apiConfig,
-			})
-			return currentState // No state update needed
+		// For LiteLLM, we'll use a different approach that doesn't require modifying the apiConfig object
+		vscode.postMessage({
+			type: "apiConfiguration",
+			apiConfiguration: apiConfig,
 		})
 	}, [])
 
