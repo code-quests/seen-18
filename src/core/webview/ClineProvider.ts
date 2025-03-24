@@ -2751,7 +2751,69 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 	async refreshLitellmModels(baseUrl?: string, apiKey?: string) {
 		const litellmModelsFilePath = path.join(await this.ensureCacheDirectoryExists(), GlobalFileNames.litellmModels)
 
-		const models: Record<string, ModelInfo> = {}
+		// Define our fixed model list as a fallback
+		const fixedModels: Record<string, ModelInfo> = {
+			mistral: {
+				maxTokens: 4096,
+				contextWindow: 8192,
+				supportsImages: false,
+				supportsPromptCache: false,
+				description: "Mistral 7B Instruct (via OpenRouter)",
+			},
+			mixtral: {
+				maxTokens: 4096,
+				contextWindow: 32768,
+				supportsImages: false,
+				supportsPromptCache: false,
+				description: "Mixtral 8x7B Instruct (via OpenRouter)",
+			},
+			"llama2-13b": {
+				maxTokens: 4096,
+				contextWindow: 4096,
+				supportsImages: false,
+				supportsPromptCache: false,
+				description: "Llama 2 13B Chat (via OpenRouter)",
+			},
+			"llama2-7b": {
+				maxTokens: 4096,
+				contextWindow: 4096,
+				supportsImages: false,
+				supportsPromptCache: false,
+				description: "Llama 2 7B Chat (via OpenRouter)",
+			},
+			"claude-instant": {
+				maxTokens: 4096,
+				contextWindow: 100000,
+				supportsImages: false,
+				supportsPromptCache: false,
+				description: "Claude Instant v1.2 (via OpenRouter)",
+			},
+			"command-r-plus": {
+				maxTokens: 4096,
+				contextWindow: 128000,
+				supportsImages: false,
+				supportsPromptCache: false,
+				description: "Command R Plus (via OpenRouter)",
+			},
+			zephyr: {
+				maxTokens: 4096,
+				contextWindow: 4096,
+				supportsImages: false,
+				supportsPromptCache: false,
+				description: "Zephyr 7B Beta (via OpenRouter)",
+			},
+			mythomax: {
+				maxTokens: 4096,
+				contextWindow: 4096,
+				supportsImages: false,
+				supportsPromptCache: false,
+				description: "MythoMax L2 13B (via OpenRouter)",
+			},
+		}
+
+		let models: Record<string, ModelInfo> = {}
+		let usedFixedModels = false
+
 		try {
 			if (!baseUrl) {
 				baseUrl = LITELLM_BASE_URL
@@ -2769,15 +2831,15 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 
 			const response = await axios.get(`${baseUrl}/v1/models`, config)
 
-			if (response.data?.data) {
-				const rawModels = response.data.data
-				for (const rawModel of rawModels) {
+			if (response.data?.data && response.data.data.length > 0) {
+				// Process models from API response
+				for (const rawModel of response.data.data) {
 					const modelInfo: ModelInfo = {
 						maxTokens: rawModel.max_tokens || undefined,
 						contextWindow: rawModel.context_window || undefined,
-						supportsImages: false, // Default to false unless specified
+						supportsImages: false,
 						supportsPromptCache: false,
-						inputPrice: undefined, // LiteLLM doesn't provide pricing info in models endpoint
+						inputPrice: undefined,
 						outputPrice: undefined,
 						description: rawModel.description,
 					}
@@ -2785,13 +2847,23 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 					models[rawModel.id] = modelInfo
 				}
 			} else {
-				this.outputChannel.appendLine("Invalid response from LiteLLM API")
+				// Use fixed models if API response doesn't contain models
+				models = fixedModels
+				usedFixedModels = true
+				this.outputChannel.appendLine("Using fixed model list for LiteLLM as API returned no models")
 			}
-			await fs.writeFile(litellmModelsFilePath, JSON.stringify(models))
 		} catch (error) {
+			// Use fixed models if API call fails
+			models = fixedModels
+			usedFixedModels = true
 			this.outputChannel.appendLine(
-				`Error fetching LiteLLM models: ${JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}`,
+				`Error fetching LiteLLM models, using fixed list: ${JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}`,
 			)
+		}
+
+		// Only write to cache if we got real models from the API
+		if (!usedFixedModels) {
+			await fs.writeFile(litellmModelsFilePath, JSON.stringify(models))
 		}
 
 		await this.postMessageToWebview({ type: "litellmModels", litellmModels: models })
