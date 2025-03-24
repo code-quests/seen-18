@@ -682,3 +682,16 @@ export const litellmDefaultModelInfo: ModelInfo = {
 	cacheWritesPrice: 3.75,
 	cacheReadsPrice: 0.3,
 }
+
+export interface ApiHandler {
+	chat(
+		messages: Array<{ role: string; content: string }>,
+		options?: { maxTokens?: number; temperature?: number },
+	): Promise<{ text: string; model: string; usage?: any }>
+	chatStream(
+		messages: Array<{ role: string; content: string }>,
+		onUpdate: (text: string) => void,
+		options?: { maxTokens?: number; temperature?: number },
+	): Promise<{ text: string; model: string }>
+	getModelInfo(): ModelInfo
+}

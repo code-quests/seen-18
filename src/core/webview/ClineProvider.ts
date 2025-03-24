@@ -623,10 +623,33 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 						getTheme().then((theme) =>
 							this.postMessageToWebview({ type: "theme", text: JSON.stringify(theme) }),
 						)
+
 						// post last cached models in case the call to endpoint fails
 						this.readOpenRouterModels().then((openRouterModels) => {
 							if (openRouterModels) {
 								this.postMessageToWebview({ type: "openRouterModels", openRouterModels })
+							}
+						})
+
+						// Add this block to load LiteLLM models
+						this.readLitellmModels().then((litellmModels) => {
+							if (litellmModels) {
+								this.postMessageToWebview({ type: "litellmModels", litellmModels })
+							}
+						})
+
+						// Also add this to refresh LiteLLM models on launch
+						this.refreshLitellmModels().then(async (litellmModels) => {
+							if (litellmModels) {
+								// update model info in state if needed
+								const { apiConfiguration } = await this.getState()
+								if (apiConfiguration.litellmModelId) {
+									await this.updateGlobalState(
+										"litellmModelInfo",
+										litellmModels[apiConfiguration.litellmModelId],
+									)
+									await this.postStateToWebview()
+								}
 							}
 						})
 
@@ -2822,35 +2845,76 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 				throw new Error("Invalid URL")
 			}
 
+			// Debug log the request details
+			this.outputChannel.appendLine(`LiteLLM request to: ${baseUrl}/v1/models`)
+			this.outputChannel.appendLine(`API Key provided: ${apiKey ? "Yes (masked)" : "No"}`)
+
 			const config: Record<string, any> = {
 				headers: {},
 			}
 			if (apiKey) {
+				// Use Bearer authentication format as required by LiteLLM
 				config.headers["Authorization"] = `Bearer ${apiKey}`
+				this.outputChannel.appendLine(`Authorization header set: Bearer ${apiKey.substring(0, 4)}...`)
 			}
 
-			const response = await axios.get(`${baseUrl}/v1/models`, config)
+			// Log the full request configuration
+			this.outputChannel.appendLine(`Request config: ${JSON.stringify(config, null, 2)}`)
 
-			if (response.data?.data && response.data.data.length > 0) {
-				// Process models from API response
-				for (const rawModel of response.data.data) {
-					const modelInfo: ModelInfo = {
-						maxTokens: rawModel.max_tokens || undefined,
-						contextWindow: rawModel.context_window || undefined,
-						supportsImages: false,
-						supportsPromptCache: false,
-						inputPrice: undefined,
-						outputPrice: undefined,
-						description: rawModel.description,
+			try {
+				const response = await axios.get(`${baseUrl}/v1/models`, config)
+
+				// Log the response status and headers
+				this.outputChannel.appendLine(`Response status: ${response.status}`)
+				this.outputChannel.appendLine(`Response headers: ${JSON.stringify(response.headers, null, 2)}`)
+
+				// Log a sample of the response data
+				const responseDataSample = JSON.stringify(response.data).substring(0, 200) + "..."
+				this.outputChannel.appendLine(`Response data sample: ${responseDataSample}`)
+
+				if (response.data?.data && response.data.data.length > 0) {
+					// Process models from API response
+					for (const rawModel of response.data.data) {
+						const modelInfo: ModelInfo = {
+							maxTokens: rawModel.max_tokens || undefined,
+							contextWindow: rawModel.context_window || undefined,
+							supportsImages: false,
+							supportsPromptCache: false,
+							inputPrice: undefined,
+							outputPrice: undefined,
+							description: rawModel.description,
+						}
+
+						models[rawModel.id] = modelInfo
 					}
-
-					models[rawModel.id] = modelInfo
+				} else {
+					// Use fixed models if API response doesn't contain models
+					models = fixedModels
+					usedFixedModels = true
+					this.outputChannel.appendLine("Using fixed model list for LiteLLM as API returned no models")
 				}
-			} else {
-				// Use fixed models if API response doesn't contain models
+			} catch (error) {
+				// More detailed error logging
+				this.outputChannel.appendLine(`Error fetching LiteLLM models: ${error.message}`)
+				if (error.response) {
+					// The request was made and the server responded with a status code
+					// that falls out of the range of 2xx
+					this.outputChannel.appendLine(`Response status: ${error.response.status}`)
+					this.outputChannel.appendLine(
+						`Response headers: ${JSON.stringify(error.response.headers, null, 2)}`,
+					)
+					this.outputChannel.appendLine(`Response data: ${JSON.stringify(error.response.data, null, 2)}`)
+				} else if (error.request) {
+					// The request was made but no response was received
+					this.outputChannel.appendLine("No response received from server")
+				} else {
+					// Something happened in setting up the request that triggered an Error
+					this.outputChannel.appendLine(`Error setting up request: ${error.message}`)
+				}
+
+				// Use fixed models if API call fails
 				models = fixedModels
 				usedFixedModels = true
-				this.outputChannel.appendLine("Using fixed model list for LiteLLM as API returned no models")
 			}
 		} catch (error) {
 			// Use fixed models if API call fails
