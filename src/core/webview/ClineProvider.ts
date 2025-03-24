@@ -39,6 +39,7 @@ import { CustomSupportPrompts, supportPrompt } from "../../shared/support-prompt
 
 import { ACTION_NAMES } from "../CodeActionProvider"
 import { McpServerManager } from "../../services/mcp/McpServerManager"
+import { LITELLM_BASE_URL } from "../../shared/constants"
 
 /*
 https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/main/default/weather-webview/src/providers/WeatherViewProvider.ts
@@ -59,6 +60,7 @@ type SecretKey =
 	| "deepSeekApiKey"
 	| "mistralApiKey"
 	| "unboundApiKey"
+	| "litellmApiKey" // Add LiteLLM API key
 type GlobalStateKey =
 	| "apiProvider"
 	| "apiModelId"
@@ -123,12 +125,16 @@ type GlobalStateKey =
 	| "customModes" // Array of custom modes
 	| "unboundModelId"
 	| "unboundModelInfo"
+	| "litellmModelId"
+	| "litellmModelInfo"
+	| "litellmModels"
 
 export const GlobalFileNames = {
 	apiConversationHistory: "api_conversation_history.json",
 	uiMessages: "ui_messages.json",
 	glamaModels: "glama_models.json",
 	openRouterModels: "openrouter_models.json",
+	litellmModels: "litellm_models.json", // Add LiteLLM models file
 	mcpSettings: "cline_mcp_settings.json",
 	unboundModels: "unbound_models.json",
 }
@@ -1489,6 +1495,16 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 							await this.updateGlobalState("mode", defaultModeSlug)
 							await this.postStateToWebview()
 						}
+						break // Add this break statement to prevent fallthrough
+					case "refreshLitellmModels" as any:
+						if (message?.values?.baseUrl) {
+							const litellmModels = await this.refreshLitellmModels(
+								message?.values?.baseUrl,
+								message?.values?.apiKey,
+							)
+							this.postMessageToWebview({ type: "litellmModels", litellmModels })
+						}
+						break
 				}
 			},
 			null,
@@ -1587,6 +1603,9 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			unboundApiKey,
 			unboundModelId,
 			unboundModelInfo,
+			litellmApiKey,
+			litellmModelId,
+			litellmModelInfo,
 		} = apiConfiguration
 		await this.updateGlobalState("apiProvider", apiProvider)
 		await this.updateGlobalState("apiModelId", apiModelId)
@@ -1628,6 +1647,9 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 		await this.storeSecret("unboundApiKey", unboundApiKey)
 		await this.updateGlobalState("unboundModelId", unboundModelId)
 		await this.updateGlobalState("unboundModelInfo", unboundModelInfo)
+		await this.storeSecret("litellmApiKey", litellmApiKey)
+		await this.updateGlobalState("litellmModelId", litellmModelId)
+		await this.updateGlobalState("litellmModelInfo", litellmModelInfo)
 		if (this.cline) {
 			this.cline.api = buildApiHandler(apiConfiguration)
 		}
@@ -2388,6 +2410,9 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			unboundApiKey,
 			unboundModelId,
 			unboundModelInfo,
+			litellmApiKey,
+			litellmModelId,
+			litellmModelInfo,
 		] = await Promise.all([
 			this.getGlobalState("apiProvider") as Promise<ApiProvider | undefined>,
 			this.getGlobalState("apiModelId") as Promise<string | undefined>,
@@ -2464,6 +2489,9 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			this.getSecret("unboundApiKey") as Promise<string | undefined>,
 			this.getGlobalState("unboundModelId") as Promise<string | undefined>,
 			this.getGlobalState("unboundModelInfo") as Promise<ModelInfo | undefined>,
+			this.getSecret("litellmApiKey") as Promise<string | undefined>,
+			this.getGlobalState("litellmModelId") as Promise<string | undefined>,
+			this.getGlobalState("litellmModelInfo") as Promise<ModelInfo | undefined>,
 		])
 
 		let apiProvider: ApiProvider
@@ -2522,6 +2550,9 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 				unboundApiKey,
 				unboundModelId,
 				unboundModelInfo,
+				litellmApiKey,
+				litellmModelId,
+				litellmModelInfo,
 			},
 			lastShownAnnouncementId,
 			customInstructions,
@@ -2675,11 +2706,13 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			"deepSeekApiKey",
 			"mistralApiKey",
 			"unboundApiKey",
+			"litellmApiKey", // Add LiteLLM API key
 		]
 		for (const key of secretKeys) {
 			await this.storeSecret(key, undefined)
 		}
 		await this.configManager.resetAllConfigs()
+
 		await this.customModesManager.resetCustomModes()
 		if (this.cline) {
 			this.cline.abortTask()
@@ -2708,5 +2741,60 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 	// Add public getter
 	public getMcpHub(): McpHub | undefined {
 		return this.mcpHub
+	}
+
+	// Add handler for LiteLLM models
+	async readLitellmModels(): Promise<Record<string, ModelInfo> | undefined> {
+		return this.readModelsFromCache(GlobalFileNames.litellmModels)
+	}
+
+	async refreshLitellmModels(baseUrl?: string, apiKey?: string) {
+		const litellmModelsFilePath = path.join(await this.ensureCacheDirectoryExists(), GlobalFileNames.litellmModels)
+
+		const models: Record<string, ModelInfo> = {}
+		try {
+			if (!baseUrl) {
+				baseUrl = LITELLM_BASE_URL
+			}
+			if (baseUrl && !URL.canParse(baseUrl)) {
+				throw new Error("Invalid URL")
+			}
+
+			const config: Record<string, any> = {
+				headers: {},
+			}
+			if (apiKey) {
+				config.headers["Authorization"] = `Bearer ${apiKey}`
+			}
+
+			const response = await axios.get(`${baseUrl}/v1/models`, config)
+
+			if (response.data?.data) {
+				const rawModels = response.data.data
+				for (const rawModel of rawModels) {
+					const modelInfo: ModelInfo = {
+						maxTokens: rawModel.max_tokens || undefined,
+						contextWindow: rawModel.context_window || undefined,
+						supportsImages: false, // Default to false unless specified
+						supportsPromptCache: false,
+						inputPrice: undefined, // LiteLLM doesn't provide pricing info in models endpoint
+						outputPrice: undefined,
+						description: rawModel.description,
+					}
+
+					models[rawModel.id] = modelInfo
+				}
+			} else {
+				this.outputChannel.appendLine("Invalid response from LiteLLM API")
+			}
+			await fs.writeFile(litellmModelsFilePath, JSON.stringify(models))
+		} catch (error) {
+			this.outputChannel.appendLine(
+				`Error fetching LiteLLM models: ${JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}`,
+			)
+		}
+
+		await this.postMessageToWebview({ type: "litellmModels", litellmModels: models })
+		return models
 	}
 }

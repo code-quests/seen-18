@@ -91,6 +91,7 @@ export interface WebviewMessage {
 		| "checkpointDiff"
 		| "checkpointRestore"
 		| "refreshLiteLLMModels"
+		| "refreshLitellmModels"
 	text?: string
 	disabled?: boolean
 	askResponse?: ClineAskResponse
