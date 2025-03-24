@@ -4,6 +4,12 @@ import { LITELLM_BASE_URL } from "../shared/constants"
 import { ApiHandler } from "./index"
 // Import only the type, not trying to use it as a constructor
 import type { ApiStream } from "./transform/stream"
+import { createParser } from "eventsource-parser"
+
+// Create a custom interface that extends the parser with our event property
+interface ExtendedParser extends ReturnType<typeof createParser> {
+	event: any
+}
 
 export function createLiteLLMApiHandler(config: ApiConfiguration): ApiHandler {
 	console.log("baseUrl	=========================== ", LITELLM_BASE_URL)
@@ -18,7 +24,8 @@ export function createLiteLLMApiHandler(config: ApiConfiguration): ApiHandler {
 			// Create an async generator function that implements the ApiStream interface
 			const stream = (async function* () {
 				const formattedMessages = [
-					// { role: "system", content: systemPrompt },
+					// Include system prompt if provided
+					//	...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
 					...messages.map((m) => ({
 						role: m.role,
 						content: m.content,
@@ -52,53 +59,52 @@ export function createLiteLLMApiHandler(config: ApiConfiguration): ApiHandler {
 						},
 						axiosConfig,
 					)
+					// Set up event handling for the stream
+					const parser = createParser({
+						onEvent(event) {
+							if (event.data === "[DONE]") {
+								return
+							}
+							try {
+								const parsedData = JSON.parse(event.data)
+								;(parser as ExtendedParser).event = parsedData
+							} catch (e) {
+								console.error("Error parsing SSE event data:", e)
+							}
+						},
+						onError(err) {
+							console.error("Error in event stream:", err)
+						},
+					}) as ExtendedParser
 
-					// Create a promise that will resolve with each chunk of data
-					const dataPromise = new Promise<string>((resolve, reject) => {
-						let buffer = ""
+					// Add a property to store the parsed event
+					parser.event = null
 
-						response.data.on("data", (chunk: Buffer) => {
-							const lines = chunk
-								.toString()
-								.split("\n")
-								.filter((line: string) => line.trim() !== "")
+					// Process the stream chunk by chunk
+					for await (const chunk of response.data) {
+						const text = chunk.toString()
+						parser.feed(text)
 
-							for (const line of lines) {
-								if (line.includes("[DONE]")) continue
-
-								try {
-									const parsed = JSON.parse(line.replace(/^data: /, ""))
-									if (parsed.choices && parsed.choices[0].delta.content) {
-										const content = parsed.choices[0].delta.content
-										buffer += content
-										resolve(buffer)
-									}
-								} catch (e) {
-									console.error("Error parsing SSE:", e, line)
+						// Reset the event after processing to avoid duplicate processing
+						if (parser.event) {
+							const parsedEvent = parser.event
+							if (
+								parsedEvent.choices &&
+								parsedEvent.choices[0].delta &&
+								parsedEvent.choices[0].delta.content
+							) {
+								yield {
+									text: parsedEvent.choices[0].delta.content,
+									done: false,
 								}
 							}
-						})
-
-						response.data.on("error", (err: Error) => {
-							console.error("Stream error:", err)
-							reject(err)
-						})
-
-						response.data.on("end", () => {
-							resolve(buffer)
-						})
-					})
-
-					// Yield each chunk of data as it comes in
-					while (true) {
-						try {
-							const text = await dataPromise
-							yield { text, done: false }
-						} catch (error) {
-							console.error("Error in stream:", error)
-							throw error
+							// Reset the event to avoid processing it again
+							parser.event = null
 						}
 					}
+
+					// Final yield to indicate completion
+					yield { text: "", done: true }
 				} catch (error: any) {
 					console.error("LiteLLM API error:", error)
 					if (error.response) {
@@ -108,9 +114,6 @@ export function createLiteLLMApiHandler(config: ApiConfiguration): ApiHandler {
 					}
 					throw error
 				}
-
-				// Final yield to indicate completion
-				yield { text: "", done: true }
 			})()
 
 			// Add the throw method to the generator
